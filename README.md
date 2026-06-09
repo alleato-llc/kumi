@@ -23,16 +23,47 @@ without making that dependency viral on its consumers.
 import Kumi
 
 let page = Node.tag("section", [.id("intro")], [
-    .tag("h2", [], text: "Hello & welcome"),          // escaped → "Hello &amp; welcome"
+    .tag("h2", [], text: "Hello & welcome"),            // text auto-escaped
     .tag("a", [.class("cta"), .href("/start?a=1&b=2")], text: "Start"),
     .tag("details", [.class("group"), .flag("open")], [ // boolean attribute
         .tag("summary", [], text: "More"),
         .raw("<!-- a trusted, prebuilt block -->"),
     ]),
-    .tag("br"),                                         // → "<br>" (void, no close)
+    .tag("br"),                                         // void → no closing tag
 ])
 
 print(page.render())
+```
+
+produces (compact — Kumi adds no whitespace of its own):
+
+```html
+<section id="intro"><h2>Hello &amp; welcome</h2><a class="cta" href="/start?a=1&amp;b=2">Start</a><details class="group" open><summary>More</summary><!-- a trusted, prebuilt block --></details><br></section>
+```
+
+### Input → output
+
+| Swift | HTML |
+|---|---|
+| `Node.text("a < b & c")` | `a &lt; b &amp; c` |
+| `Node.tag("span", [.class("tag")], text: "x")` | `<span class="tag">x</span>` |
+| `Node.tag("input", [.attr("value", "a \"b\"")])` | `<input value="a &quot;b&quot;">` |
+| `Node.tag("details", [.flag("open")], text: "hi")` | `<details open>hi</details>` |
+| `Node.tag("br")` | `<br>` |
+| `Node.raw("<em>trusted</em>")` | `<em>trusted</em>` |
+| `Node.fragment([.tag("b", [], text: "x"), .text(" & "), .tag("i", [], text: "y")])` | `<b>x</b> &amp; <i>y</i>` |
+
+A whole page with `Node.document`:
+
+```swift
+Node.document(
+    head: [.tag("meta", [.attr("charset", "UTF-8")]), .tag("title", [], text: "Report")],
+    body: [.tag("h1", [], text: "Hi")]
+).render()
+```
+
+```html
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Report</title></head><body><h1>Hi</h1></body></html>
 ```
 
 Building blocks:
@@ -44,10 +75,34 @@ Building blocks:
 | `Node.text(_:)` | escaped text |
 | `Node.raw(_:)` | trusted HTML, verbatim (never pass user input) |
 | `Node.fragment(_:)` | several nodes with no wrapper |
+| `Node.document(lang:head:body:)` | a full `<!DOCTYPE html>` page |
 | `[Node].render()` | a list of nodes, concatenated |
 
 Attribute sugar: `.class(_)`, `.id(_)`, `.href(_)`, `.data(name, value)`,
 `.attr(name, value)`, and `.flag(name)` for boolean attributes.
+
+### Tag helpers
+
+Common elements have named helpers, so markup reads like markup —
+`Node.div`, `.h1`–`.h6`, `.p`, `.a`, `.span`, `.ul`/`.ol`/`.li`,
+`.table`/`.tr`/`.th`/`.td`, `.details`/`.summary`, `.img`/`.br`/`.input`
+(void), `.style`/`.script`, and more. Each is a one-line wrapper over
+`Node.tag`, so output is identical and anything not listed still works via
+`Node.tag`:
+
+```swift
+Node.section([.id("intro")], [
+    .h2([], text: "Hello & welcome"),
+    .ul([.class("list")], [
+        .li([], text: "one"),
+        .li([], text: "two"),
+    ]),
+])
+```
+
+```html
+<section id="intro"><h2>Hello &amp; welcome</h2><ul class="list"><li>one</li><li>two</li></ul></section>
+```
 
 ## Add it
 
