@@ -44,7 +44,11 @@ body { font:16px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--fg)
 .case.bad { color:var(--bad); }
 .cname { flex:1; }
 .ms { color:var(--muted); font-size:.8rem; }
+footer { text-align:center; color:var(--muted); font-size:.8rem; margin-top:1.5rem; }
+footer a { color:inherit; }
 """
+
+let source = "https://github.com/alleato-llc/kumi/blob/main/Examples/report/main.swift"
 
 let page = Node.document(head: [
     .meta([.attr("charset", "UTF-8")]),
@@ -77,6 +81,12 @@ let page = Node.document(head: [
             }
         }
     },
+    .tag("footer", [], [
+        .text("Built with "),
+        .a([.href("https://github.com/alleato-llc/kumi")], text: "Kumi"),
+        .text(" · "),
+        .a([.href(source)], text: "view source ↗"),
+    ]),
 ])
 
 print(page.render())

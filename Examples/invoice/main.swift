@@ -29,7 +29,11 @@ td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
 tr.large td { background:var(--hi); }
 tfoot td { font-weight:700; border-top:2px solid var(--fg); border-bottom:none; }
 .note { color:var(--muted); font-size:.85rem; margin-top:1rem; }
+footer { text-align:center; color:var(--muted); font-size:.8rem; margin-top:1.25rem; }
+footer a { color:inherit; }
 """
+
+let source = "https://github.com/alleato-llc/kumi/blob/main/Examples/invoice/main.swift"
 
 let page = Node.document(head: [
     .meta([.attr("charset", "UTF-8")]),
@@ -70,6 +74,12 @@ let page = Node.document(head: [
         }
         Node.p([.class("note")], text: "Thank you for your business.")
     },
+    .tag("footer", [], [
+        .text("Built with "),
+        .a([.href("https://github.com/alleato-llc/kumi")], text: "Kumi"),
+        .text(" · "),
+        .a([.href(source)], text: "view source ↗"),
+    ]),
 ])
 
 print(page.render())

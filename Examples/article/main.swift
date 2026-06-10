@@ -25,7 +25,11 @@ ul { margin:1rem 0 1rem 1.2rem; }
 pre { background:#2d2a26; color:#f3eee4; padding:1rem; border-radius:8px; overflow:auto; font:14px/1.5 ui-monospace,Menlo,monospace; }
 .comments { border-top:1px solid var(--line); margin-top:2.5rem; padding-top:1rem; }
 .comment { background:#fff; border:1px solid var(--line); border-radius:8px; padding:.8rem 1rem; font-size:.95rem; }
+footer { text-align:center; color:var(--muted); font-size:.8rem; margin:2rem 0 0; font-family:system-ui,sans-serif; }
+footer a { color:var(--accent); }
 """
+
+let source = "https://github.com/alleato-llc/kumi/blob/main/Examples/article/main.swift"
 
 let page = Node.document(head: [
     .meta([.attr("charset", "UTF-8")]),
@@ -56,6 +60,12 @@ let page = Node.document(head: [
             // The comment is untrusted text. Rendered as a text node, its markup
             // is escaped — the <script> shows as characters and never runs.
             Node.div([.class("comment")], text: userComment)
+        }
+        Node.tag("footer") {
+            Node.text("Built with ")
+            Node.a([.href("https://github.com/alleato-llc/kumi")], text: "Kumi")
+            Node.text(" · ")
+            Node.a([.href(source)], text: "view source ↗")
         }
     },
 ])

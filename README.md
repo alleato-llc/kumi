@@ -152,22 +152,47 @@ var page = ""; node.render(into: &page)        // append to an existing buffer
 
 ## Examples
 
-Three runnable showcases live in `Examples/` (executable targets — they're not
-library products, so depending on `Kumi` never builds them):
+Three runnable showcases live in `Examples/` (executable targets — not library
+products, so depending on `Kumi` never builds them). Each builds a styled page
+with Kumi; **[browse them live ↗](https://alleato-llc.github.io/kumi/)** (the
+gallery index is itself built with Kumi), or read the source behind each.
 
-| Demo | Shows off |
-|---|---|
-| `report` | a test dashboard from a data model — the builder's `for`/`if`, `.flag("open", if:)`, conditional `.classes` |
-| `invoice` | a table built from line items — table helpers, conditional row classes, computed totals |
-| `article` | the `document` page API, prose + a code block, and a user comment whose `<script>` is escaped to inert text |
+### Build report
+
+[![Build report](docs/screenshots/report.png)](https://alleato-llc.github.io/kumi/report.html)
+
+A test dashboard from a data model — the `@KumiBuilder`'s `for`/`if`,
+`.flag("open", if: failed)` (the failing suite auto-opens), and conditional
+`.classes`.
+[live ↗](https://alleato-llc.github.io/kumi/report.html) ·
+[source ↗](https://github.com/alleato-llc/kumi/blob/main/Examples/report/main.swift)
+
+### Invoice
+
+[![Invoice](docs/screenshots/invoice.png)](https://alleato-llc.github.io/kumi/invoice.html)
+
+A line-item table — the table helpers, conditional row classes
+(`.classes(["row", large ? "large" : nil])`), and a computed total.
+[live ↗](https://alleato-llc.github.io/kumi/invoice.html) ·
+[source ↗](https://github.com/alleato-llc/kumi/blob/main/Examples/invoice/main.swift)
+
+### Article
+
+[![Article](docs/screenshots/article.png)](https://alleato-llc.github.io/kumi/article.html)
+
+The `document` page API with prose and a code block — and a user comment whose
+`<script>` is escaped to inert text (auto-escaping, made visible).
+[live ↗](https://alleato-llc.github.io/kumi/article.html) ·
+[source ↗](https://github.com/alleato-llc/kumi/blob/main/Examples/article/main.swift)
 
 ```sh
-swift run report                 # prints a page to stdout
-Examples/render.sh               # renders all of them into docs/ (+ a gallery index.html)
+swift run report                 # prints one page to stdout
+Examples/render.sh               # renders all of them into docs/ (+ the gallery)
 ```
 
-The generated pages are committed under `docs/` (the gallery `index.html` is
-itself built with Kumi); open `docs/index.html` to browse them.
+The pages are committed under `docs/` and served at
+[alleato-llc.github.io/kumi](https://alleato-llc.github.io/kumi/); each links
+back to the Kumi source that built it.
 
 ## Add it
 
