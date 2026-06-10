@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 #
-# Builds every example and writes its page into docs/ (committed; ready to
-# serve via GitHub Pages later). Each example prints its HTML to stdout, so the
-# build chatter on stderr doesn't pollute the files.
+# Renders every example into a directory (default: docs/, for local preview;
+# CI passes _site/). Each example prints its HTML to stdout, so build chatter
+# on stderr doesn't pollute the files.
+#
+#   Examples/render.sh            # → docs/
+#   Examples/render.sh _site      # → _site/
 set -euo pipefail
 cd "$(dirname "$0")/.."
-mkdir -p docs
+out="${1:-docs}"
+mkdir -p "$out"
 
 for demo in report invoice article gallery; do
-    out="docs/$([ "$demo" = gallery ] && echo index || echo "$demo").html"
-    swift run -c release "$demo" > "$out"
-    echo "wrote $out"
+    file="$out/$([ "$demo" = gallery ] && echo index || echo "$demo").html"
+    swift run "$demo" > "$file"
+    echo "wrote $file"
 done

@@ -159,7 +159,7 @@ gallery index is itself built with Kumi), or read the source behind each.
 
 ### Build report
 
-[![Build report](docs/screenshots/report.png)](https://alleato-llc.github.io/kumi/report.html)
+[![Build report](https://alleato-llc.github.io/kumi/screenshots/report.png)](https://alleato-llc.github.io/kumi/report.html)
 
 A test dashboard from a data model — the `@KumiBuilder`'s `for`/`if`,
 `.flag("open", if: failed)` (the failing suite auto-opens), and conditional
@@ -169,7 +169,7 @@ A test dashboard from a data model — the `@KumiBuilder`'s `for`/`if`,
 
 ### Invoice
 
-[![Invoice](docs/screenshots/invoice.png)](https://alleato-llc.github.io/kumi/invoice.html)
+[![Invoice](https://alleato-llc.github.io/kumi/screenshots/invoice.png)](https://alleato-llc.github.io/kumi/invoice.html)
 
 A line-item table — the table helpers, conditional row classes
 (`.classes(["row", large ? "large" : nil])`), and a computed total.
@@ -178,7 +178,7 @@ A line-item table — the table helpers, conditional row classes
 
 ### Article
 
-[![Article](docs/screenshots/article.png)](https://alleato-llc.github.io/kumi/article.html)
+[![Article](https://alleato-llc.github.io/kumi/screenshots/article.png)](https://alleato-llc.github.io/kumi/article.html)
 
 The `document` page API with prose and a code block — and a user comment whose
 `<script>` is escaped to inert text (auto-escaping, made visible).

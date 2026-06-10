@@ -1,0 +1,65 @@
+name: Examples → GitHub Pages
+
+# Builds the examples on every push to main, screenshots them, and publishes
+# the gallery (HTML + screenshots) to GitHub Pages. The screenshots the README
+# links to are produced here — never committed — so they're always current and
+# the examples are proven to still compile.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+
+      - name: Test
+        run: swift test
+
+      - name: Render example pages
+        run: Examples/render.sh _site
+
+      - name: Screenshot pages
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq python3-pil
+          mkdir -p /tmp/shots _site/screenshots
+          for page in index report invoice article; do
+            "${{ steps.chrome.outputs.chrome-path }}" \
+              --headless=new --disable-gpu --no-sandbox --hide-scrollbars \
+              --force-device-scale-factor=2 --window-size=1000,2000 \
+              --screenshot="/tmp/shots/$page.png" "file://$PWD/_site/$page.html"
+          done
+          python3 .github/scripts/trim.py /tmp/shots _site/screenshots
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
