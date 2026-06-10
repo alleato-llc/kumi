@@ -165,6 +165,118 @@ struct KumiTests {
         #expect(collected == node.render())
     }
 
+    // Every tag helper emits *its own* tag — guards against copy-paste typos
+    // (e.g. h4 accidentally calling .tag("h3")).
+    @Test func everyTagHelperEmitsItsOwnTag() {
+        // Children form.
+        #expect(Node.div([], []).render() == "<div></div>")
+        #expect(Node.span([], []).render() == "<span></span>")
+        #expect(Node.section([], []).render() == "<section></section>")
+        #expect(Node.article([], []).render() == "<article></article>")
+        #expect(Node.header([], []).render() == "<header></header>")
+        #expect(Node.footer([], []).render() == "<footer></footer>")
+        #expect(Node.nav([], []).render() == "<nav></nav>")
+        #expect(Node.main([], []).render() == "<main></main>")
+        #expect(Node.aside([], []).render() == "<aside></aside>")
+        #expect(Node.h1([], []).render() == "<h1></h1>")
+        #expect(Node.h2([], []).render() == "<h2></h2>")
+        #expect(Node.h3([], []).render() == "<h3></h3>")
+        #expect(Node.h4([], []).render() == "<h4></h4>")
+        #expect(Node.h5([], []).render() == "<h5></h5>")
+        #expect(Node.h6([], []).render() == "<h6></h6>")
+        #expect(Node.p([], []).render() == "<p></p>")
+        #expect(Node.a([], []).render() == "<a></a>")
+        #expect(Node.pre([], []).render() == "<pre></pre>")
+        #expect(Node.ul([], []).render() == "<ul></ul>")
+        #expect(Node.ol([], []).render() == "<ol></ol>")
+        #expect(Node.li([], []).render() == "<li></li>")
+        #expect(Node.table([], []).render() == "<table></table>")
+        #expect(Node.thead([], []).render() == "<thead></thead>")
+        #expect(Node.tbody([], []).render() == "<tbody></tbody>")
+        #expect(Node.tr([], []).render() == "<tr></tr>")
+        #expect(Node.th([], []).render() == "<th></th>")
+        #expect(Node.td([], []).render() == "<td></td>")
+        #expect(Node.details([], []).render() == "<details></details>")
+        #expect(Node.summary([], []).render() == "<summary></summary>")
+        #expect(Node.label([], []).render() == "<label></label>")
+
+        // Text-child form.
+        #expect(Node.div([], text: "t").render() == "<div>t</div>")
+        #expect(Node.span([], text: "t").render() == "<span>t</span>")
+        #expect(Node.h1([], text: "t").render() == "<h1>t</h1>")
+        #expect(Node.h2([], text: "t").render() == "<h2>t</h2>")
+        #expect(Node.h3([], text: "t").render() == "<h3>t</h3>")
+        #expect(Node.h4([], text: "t").render() == "<h4>t</h4>")
+        #expect(Node.p([], text: "t").render() == "<p>t</p>")
+        #expect(Node.a([], text: "t").render() == "<a>t</a>")
+        #expect(Node.li([], text: "t").render() == "<li>t</li>")
+        #expect(Node.th([], text: "t").render() == "<th>t</th>")
+        #expect(Node.td([], text: "t").render() == "<td>t</td>")
+        #expect(Node.summary([], text: "t").render() == "<summary>t</summary>")
+        #expect(Node.strong([], text: "t").render() == "<strong>t</strong>")
+        #expect(Node.em([], text: "t").render() == "<em>t</em>")
+        #expect(Node.small([], text: "t").render() == "<small>t</small>")
+        #expect(Node.code([], text: "t").render() == "<code>t</code>")
+        #expect(Node.button([], text: "t").render() == "<button>t</button>")
+        #expect(Node.title([], text: "t").render() == "<title>t</title>")
+
+        // Raw-content head tags and void elements.
+        #expect(Node.style("c").render() == "<style>c</style>")
+        #expect(Node.script("j").render() == "<script>j</script>")
+        #expect(Node.br().render() == "<br>")
+        #expect(Node.hr().render() == "<hr>")
+        #expect(Node.img().render() == "<img>")
+        #expect(Node.input().render() == "<input>")
+        #expect(Node.meta().render() == "<meta>")
+        #expect(Node.link().render() == "<link>")
+    }
+
+    // Each builder-closure overload emits its own tag too.
+    @Test func everyBuilderHelperEmitsItsOwnTag() {
+        #expect(Node.tag("custom") { Node.empty }.render() == "<custom></custom>")
+        #expect(Node.div { Node.empty }.render() == "<div></div>")
+        #expect(Node.span { Node.empty }.render() == "<span></span>")
+        #expect(Node.section { Node.empty }.render() == "<section></section>")
+        #expect(Node.article { Node.empty }.render() == "<article></article>")
+        #expect(Node.header { Node.empty }.render() == "<header></header>")
+        #expect(Node.footer { Node.empty }.render() == "<footer></footer>")
+        #expect(Node.nav { Node.empty }.render() == "<nav></nav>")
+        #expect(Node.main { Node.empty }.render() == "<main></main>")
+        #expect(Node.aside { Node.empty }.render() == "<aside></aside>")
+        #expect(Node.p { Node.empty }.render() == "<p></p>")
+        #expect(Node.a { Node.empty }.render() == "<a></a>")
+        #expect(Node.ul { Node.empty }.render() == "<ul></ul>")
+        #expect(Node.ol { Node.empty }.render() == "<ol></ol>")
+        #expect(Node.li { Node.empty }.render() == "<li></li>")
+        #expect(Node.table { Node.empty }.render() == "<table></table>")
+        #expect(Node.thead { Node.empty }.render() == "<thead></thead>")
+        #expect(Node.tbody { Node.empty }.render() == "<tbody></tbody>")
+        #expect(Node.tr { Node.empty }.render() == "<tr></tr>")
+        #expect(Node.th { Node.empty }.render() == "<th></th>")
+        #expect(Node.td { Node.empty }.render() == "<td></td>")
+        #expect(Node.details { Node.empty }.render() == "<details></details>")
+        #expect(Node.summary { Node.empty }.render() == "<summary></summary>")
+        #expect(Node.label { Node.empty }.render() == "<label></label>")
+        #expect(Node.pre { Node.empty }.render() == "<pre></pre>")
+    }
+
+    // Exercises every KumiBuilder combinator in one closure.
+    @Test func builderCoversAllControlFlow() {
+        let show = true, hide = false, items = [1, 2]
+        let html = Node.div {
+            Node.text("a")                                    // buildExpression(Node)
+            [Node.text("b"), Node.text("c")]                  // buildExpression([Node])
+            "d"                                               // buildExpression(String)
+            if show { Node.text("e") }                        // buildOptional (some)
+            if hide { Node.text("X") }                        // buildOptional (none)
+            if show { Node.text("f") } else { Node.text("Y") } // buildEither(first)
+            if hide { Node.text("Z") } else { Node.text("g") } // buildEither(second)
+            for i in items { Node.text("\(i)") }              // buildArray
+            if #available(macOS 14, *) { Node.text("h") }     // buildLimitedAvailability
+        }.render()
+        #expect(html == "<div>abcdefg12h</div>")
+    }
+
     @Test func mixesRawAndBuiltMarkup() {
         // The real consumer pattern: a built shell with a trusted inner block.
         let page = Node.tag("section", [.id("s1")], [
