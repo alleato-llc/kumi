@@ -22,14 +22,14 @@ without making that dependency viral on its consumers.
 ```swift
 import Kumi
 
-let page = Node.tag("section", [.id("intro")], [
-    .tag("h2", [], text: "Hello & welcome"),            // text auto-escaped
-    .tag("a", [.class("cta"), .href("/start?a=1&b=2")], text: "Start"),
-    .tag("details", [.class("group"), .flag("open")], [ // boolean attribute
-        .tag("summary", [], text: "More"),
+let page = Node.section([.id("intro")], [
+    .h2([], text: "Hello & welcome"),                 // text auto-escaped
+    .a([.class("cta"), .href("/start?a=1&b=2")], text: "Start"),
+    .details([.class("group"), .flag("open")], [      // boolean attribute
+        .summary([], text: "More"),
         .raw("<!-- a trusted, prebuilt block -->"),
     ]),
-    .tag("br"),                                         // void → no closing tag
+    .br(),                                            // void → no closing tag
 ])
 
 print(page.render())
@@ -83,33 +83,24 @@ Attribute sugar: `.class(_)`, `.id(_)`, `.href(_)`, `.data(name, value)`,
 
 ### Tag helpers
 
-Common elements have named helpers, so markup reads like markup —
-`Node.div`, `.h1`–`.h6`, `.p`, `.a`, `.span`, `.ul`/`.ol`/`.li`,
-`.table`/`.tr`/`.th`/`.td`, `.details`/`.summary`, `.img`/`.br`/`.input`
-(void), `.style`/`.script`, and more. Each is a one-line wrapper over
-`Node.tag`, so output is identical and anything not listed still works via
-`Node.tag`:
-
-```swift
-Node.section([.id("intro")], [
-    .h2([], text: "Hello & welcome"),
-    .ul([.class("list")], [
-        .li([], text: "one"),
-        .li([], text: "two"),
-    ]),
-])
-```
-
-```html
-<section id="intro"><h2>Hello &amp; welcome</h2><ul class="list"><li>one</li><li>two</li></ul></section>
-```
+The example above uses the named helpers (`.section`, `.h2`, `.a`, `.details`,
+`.summary`, `.br`) rather than `Node.tag("section", …)`, so the code reads like
+the markup. Common elements are covered — `Node.div`, `.h1`–`.h6`, `.p`, `.a`,
+`.span`, `.ul`/`.ol`/`.li`, `.table`/`.tr`/`.th`/`.td`, `.details`/`.summary`,
+`.img`/`.br`/`.input` (void), `.style`/`.script`, and more. Each is a one-line
+wrapper over `Node.tag`, so output is identical and **anything not listed still
+works via `Node.tag`** — the helpers are sugar, not a closed set.
 
 ## Add it
 
 ```swift
-.package(url: "https://github.com/alleato-llc/kumi.git", from: "0.1.0"),
+.package(url: "https://github.com/alleato-llc/kumi.git", from: "0.2.0"),
 ```
 
 ```swift
 .target(name: "YourTarget", dependencies: [.product(name: "Kumi", package: "kumi")]),
 ```
+
+## License
+
+[MIT](LICENSE) © Alleato LLC.
