@@ -12,6 +12,14 @@ enum Escaping {
     }
 
     private static func escape(_ string: String, quotes: Bool) -> String {
+        // Fast path: most text/attribute values contain nothing special, so
+        // skip the per-character rewrite and hand the string back unchanged.
+        let needsEscaping = string.contains { character in
+            character == "&" || character == "<" || character == ">"
+                || (quotes && character == "\"")
+        }
+        guard needsEscaping else { return string }
+
         var out = ""
         out.reserveCapacity(string.count)
         for character in string {

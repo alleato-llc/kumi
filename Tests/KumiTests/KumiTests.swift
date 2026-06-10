@@ -124,6 +124,47 @@ struct KumiTests {
         #expect("\(node)" == "<span class=\"x\">hi</span>")
     }
 
+    @Test func classesJoinsAndDropsNils() {
+        #expect(Node.div([.classes(["card", true ? "on" : nil, false ? "x" : nil])]).render()
+            == "<div class=\"card on\"></div>")
+        // All-nil produces nothing (no empty class="").
+        #expect(Node.span([.classes([nil, nil])], text: "x").render() == "<span>x</span>")
+    }
+
+    @Test func conditionalAttributesAppearOnlyWhenTrue() {
+        #expect(Node.tag("details", [.flag("open", if: true)]).render() == "<details open></details>")
+        #expect(Node.tag("details", [.flag("open", if: false)]).render() == "<details></details>")
+        #expect(Node.tag("li", [.class("row"), .when(true, .attr("aria-current", "true"))]).render()
+            == "<li class=\"row\" aria-current=\"true\"></li>")
+        #expect(Node.tag("li", [.class("row"), .when(false, .attr("aria-current", "true"))]).render()
+            == "<li class=\"row\"></li>")
+    }
+
+    @Test func builderAssemblesChildrenWithControlFlow() {
+        let rows = [1, 2]
+        let showBody = true
+        let html = Node.div(.class("card")) {
+            Node.h2(text: "Title")
+            if showBody { Node.p(text: "body & more") }
+            for row in rows { Node.li(text: "\(row)") }
+            if rows.isEmpty { Node.span(text: "none") } else { Node.empty }
+            "trailing & text"
+        }.render()
+        #expect(html == "<div class=\"card\"><h2>Title</h2><p>body &amp; more</p>"
+            + "<li>1</li><li>2</li>trailing &amp; text</div>")
+    }
+
+    @Test func renderIntoBufferMatchesRender() {
+        let node = Node.section([.id("s")], [.h2([], text: "T"), .p([], text: "b")])
+        var buffer = "PREFIX:"
+        node.render(into: &buffer)
+        #expect(buffer == "PREFIX:" + node.render())
+        // The sink form collects the same bytes.
+        var collected = ""
+        node.render(to: { collected += $0 })
+        #expect(collected == node.render())
+    }
+
     @Test func mixesRawAndBuiltMarkup() {
         // The real consumer pattern: a built shell with a trusted inner block.
         let page = Node.tag("section", [.id("s1")], [

@@ -96,6 +96,16 @@ Node.div([.class("card")], [
 Attribute sugar: `.class(_)`, `.id(_)`, `.href(_)`, `.data(name, value)`,
 `.attr(name, value)`, and `.flag(name)` for boolean attributes.
 
+**Conditional / multiple attributes** — drop or combine without a ternary:
+
+```swift
+.classes(["card", active ? "on" : nil])   // → class="card on"  (nils drop)
+.flag("open", if: isOpen)                  // the attribute only when isOpen
+.when(selected, .attr("aria-selected", "true"))   // any attribute, only when true
+```
+
+A dropped conditional renders to nothing (no empty `class=""`).
+
 ### Tag helpers
 
 The example above uses the named helpers (`.section`, `.h2`, `.a`, `.details`,
@@ -105,6 +115,40 @@ the markup. Common elements are covered — `Node.div`, `.h1`–`.h6`, `.p`, `.a
 `.img`/`.br`/`.input` (void), `.style`/`.script`, and more. Each is a one-line
 wrapper over `Node.tag`, so output is identical and **anything not listed still
 works via `Node.tag`** — the helpers are sugar, not a closed set.
+
+### Builder syntax
+
+For nesting with native control flow, container helpers take a `@KumiBuilder`
+closure (attributes are variadic):
+
+```swift
+Node.div(.class("card")) {
+    Node.h2(text: "Title")
+    if showBody { Node.p(text: body) }       // if  → optional
+    for row in rows { Node.li(text: row) }    // for → loop
+    if let link {                             // if/else → either
+        Node.a([.href(link)], text: "More")
+    } else {
+        Node.empty
+    }
+    "a bare string is escaped text"
+}
+```
+
+A statement is a `Node`, a `[Node]` (spliced), or a `String` (escaped text).
+It's opt-in — the array forms (`Node.div([…], […])`) still work unchanged.
+
+## Rendering
+
+`render() -> String` is built over one worker, `render(to: (String) -> Void)`,
+which writes each token once into a sink. Use it directly to **stream** to a
+file (Foundation stays in your code, not Kumi), or `render(into: &buffer)` to
+append into a buffer you already hold:
+
+```swift
+node.render { handle.write(Data($0.utf8)) }   // stream, no String materialized
+var page = ""; node.render(into: &page)        // append to an existing buffer
+```
 
 ## Add it
 

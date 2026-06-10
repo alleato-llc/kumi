@@ -97,34 +97,52 @@ public struct Node: Sendable, Equatable {
 
     // MARK: Rendering
 
-    /// The HTML string for this node and everything under it.
-    public func render() -> String {
+    /// The single worker: writes this node (and everything under it) into the
+    /// `write` sink, one token at a time — each output byte is produced once.
+    /// `render()` builds a String over this; a caller can stream straight to a
+    /// file by passing their own sink (`node.render { handle.write(Data($0.utf8)) }`),
+    /// keeping Foundation out of Kumi.
+    public func render(to write: (String) -> Void) {
         switch storage {
         case .text(let string):
-            return Escaping.text(string)
+            write(Escaping.text(string))
         case .raw(let html):
-            return html
+            write(html)
         case .fragment(let nodes):
-            return nodes.map { $0.render() }.joined()
+            for node in nodes { node.render(to: write) }
         case .element(let tag, let attributes, let children):
-            var html = "<\(tag)"
-            for attribute in attributes {
+            write("<\(tag)")
+            // An empty-name attribute is the "nothing" sentinel (a dropped
+            // conditional attribute) — skip it.
+            for attribute in attributes where !attribute.name.isEmpty {
                 if let value = attribute.value {
-                    html += " \(attribute.name)=\"\(Escaping.attribute(value))\""
+                    write(" \(attribute.name)=\"\(Escaping.attribute(value))\"")
                 } else {
-                    html += " \(attribute.name)"
+                    write(" \(attribute.name)")
                 }
             }
             // Void elements (<br>, <meta>, <img>, …) have no closing tag.
             if children.isEmpty, Node.voidElements.contains(tag.lowercased()) {
-                return html + ">"
+                write(">")
+                return
             }
-            html += ">"
-            for child in children {
-                html += child.render()
-            }
-            return html + "</\(tag)>"
+            write(">")
+            for child in children { child.render(to: write) }
+            write("</\(tag)>")
         }
+    }
+
+    /// The HTML string for this node and everything under it.
+    public func render() -> String {
+        var output = ""
+        render(to: { output += $0 })
+        return output
+    }
+
+    /// Appends this node's HTML to an existing buffer — one growing
+    /// allocation across a whole page.
+    public func render(into output: inout String) {
+        render(to: { output += $0 })
     }
 
     /// The HTML5 void elements — they take no children and emit no closing tag.
@@ -142,8 +160,10 @@ extension Node: CustomStringConvertible {
 
 public extension Array where Element == Node {
     /// Renders a list of nodes to one concatenated string — the usual way to
-    /// turn the children of a page into output.
+    /// turn the children of a page into output. Uses a single growing buffer.
     func render() -> String {
-        map { $0.render() }.joined()
+        var output = ""
+        for node in self { node.render(to: { output += $0 }) }
+        return output
     }
 }
