@@ -76,7 +76,22 @@ Building blocks:
 | `Node.raw(_:)` | trusted HTML, verbatim (never pass user input) |
 | `Node.fragment(_:)` | several nodes with no wrapper |
 | `Node.document(lang:head:body:)` | a full `<!DOCTYPE html>` page |
+| `Node.comment(_:)` | an `<!-- … -->` (content neutralized — safe) |
+| `Node.empty` | nothing (renders `""`) |
+| `Node.when(cond) { … }` / `Node.optional(_:)` | a node only when present/true |
 | `[Node].render()` | a list of nodes, concatenated |
+
+A `Node` is `CustomStringConvertible`, so `print(node)` and `"\(node)"` render it.
+
+Conditional content keeps a children array declarative:
+
+```swift
+Node.div([.class("card")], [
+    .h2([], text: title),
+    .when(!tags.isEmpty) { .ul([], tags.map { .li([], text: $0) }) },
+    .optional(footer),   // a Node? — included only if non-nil
+])
+```
 
 Attribute sugar: `.class(_)`, `.id(_)`, `.href(_)`, `.data(name, value)`,
 `.attr(name, value)`, and `.flag(name)` for boolean attributes.

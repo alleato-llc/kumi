@@ -95,6 +95,35 @@ struct KumiTests {
             + "<ul class=\"list\"><li>one</li><li>two</li></ul></section>")
     }
 
+    @Test func emptyAndConditionalContent() {
+        #expect(Node.empty.render() == "")
+        #expect(Node.when(true) { .tag("b", [], text: "x") }.render() == "<b>x</b>")
+        #expect(Node.when(false) { .tag("b", [], text: "x") }.render() == "")
+        #expect(Node.optional(nil).render() == "")
+        #expect(Node.optional(.tag("i", [], text: "y")).render() == "<i>y</i>")
+        // Conditional nodes keep a children array declarative.
+        let html = Node.div([], [
+            .tag("h2", [], text: "Title"),
+            .when(false) { .tag("p", [], text: "hidden") },
+            .when(true) { .tag("p", [], text: "shown") },
+        ]).render()
+        #expect(html == "<div><h2>Title</h2><p>shown</p></div>")
+    }
+
+    @Test func commentIsNeutralized() {
+        #expect(Node.comment(" a note ").render() == "<!-- a note -->")
+        // A "-->" in content can't close the comment early.
+        let r = Node.comment("danger --> x").render()
+        #expect(!r.dropFirst(4).dropLast(3).contains("-->"))
+        #expect(r.hasPrefix("<!--") && r.hasSuffix("-->"))
+    }
+
+    @Test func descriptionIsRenderedHTML() {
+        let node = Node.tag("span", [.class("x")], text: "hi")
+        #expect(node.description == node.render())
+        #expect("\(node)" == "<span class=\"x\">hi</span>")
+    }
+
     @Test func mixesRawAndBuiltMarkup() {
         // The real consumer pattern: a built shell with a trusted inner block.
         let page = Node.tag("section", [.id("s1")], [

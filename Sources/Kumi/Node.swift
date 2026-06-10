@@ -65,6 +65,36 @@ public struct Node: Sendable, Equatable {
         ])
     }
 
+    /// Nothing — renders to the empty string. The neutral element you place in
+    /// a children array when a node is conditionally absent.
+    public static let empty = Node(storage: .fragment([]))
+
+    /// `build()` when `condition` holds, otherwise `.empty`. Lets a children
+    /// array stay declarative: `.when(!tags.isEmpty) { .div([.class("tags")], …) }`.
+    public static func when(_ condition: Bool, _ build: () -> Node) -> Node {
+        condition ? build() : .empty
+    }
+
+    /// The node if present, otherwise `.empty` — `.optional(reportLink.map { … })`.
+    public static func optional(_ node: Node?) -> Node {
+        node ?? .empty
+    }
+
+    /// An HTML comment `<!-- text -->`. The content is neutralized so it can't
+    /// close the comment early: any `--` run is broken (a comment may not
+    /// contain `-->`), which keeps even untrusted text safe here.
+    public static func comment(_ text: String) -> Node {
+        var safe = ""
+        safe.reserveCapacity(text.count)
+        var lastWasDash = false
+        for character in text {
+            if character == "-" && lastWasDash { safe.append(" ") }
+            safe.append(character)
+            lastWasDash = (character == "-")
+        }
+        return .raw("<!--\(safe)-->")
+    }
+
     // MARK: Rendering
 
     /// The HTML string for this node and everything under it.
@@ -102,6 +132,12 @@ public struct Node: Sendable, Equatable {
         "area", "base", "br", "col", "embed", "hr", "img",
         "input", "link", "meta", "param", "source", "track", "wbr",
     ]
+}
+
+extension Node: CustomStringConvertible {
+    /// `description` is the rendered HTML, so `print(node)` and `"\(node)"`
+    /// just work.
+    public var description: String { render() }
 }
 
 public extension Array where Element == Node {
