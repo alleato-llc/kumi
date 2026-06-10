@@ -14,7 +14,14 @@ swift test            # Swift Testing (not XCTest)
 swift test --filter KumiTests
 ```
 
-There is no linter, no app target, no CI config in-repo. The whole library is three source files.
+There is no linter or CI config in-repo. The library itself is a handful of source files; `Examples/` holds runnable showcase executables.
+
+```sh
+swift run report                 # one example to stdout (also: invoice, article, gallery)
+Examples/render.sh               # render all examples into docs/ (committed; GitHub Pages later)
+```
+
+`Examples/{report,invoice,article,gallery}` are **`.executableTarget`s**, not library products — so packages depending on `Kumi` never build them. Each prints a full styled page to stdout; `render.sh` writes them into `docs/` (the gallery's `index.html` is itself built with Kumi). They compile against the live API, so an API change that breaks an example fails the build — which is the point. When changing the API, keep the examples (and their committed `docs/*.html`) current.
 
 ## Architecture
 

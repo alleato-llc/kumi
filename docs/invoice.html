@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Invoice — Kumi demo</title><style>:root { --bg:#fff; --fg:#1a202c; --muted:#718096; --line:#e2e8f0; --accent:#3182ce; --hi:#fffaf0; }
+* { box-sizing:border-box; margin:0; }
+body { font:16px/1.5 system-ui,sans-serif; color:var(--fg); background:#f7fafc; padding:2.5rem 1rem; }
+.invoice { max-width:640px; margin:0 auto; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:2rem; }
+h1 { font-size:1.5rem; } .meta { color:var(--muted); margin:.2rem 0 1.5rem; }
+table { width:100%; border-collapse:collapse; }
+th, td { text-align:left; padding:.6rem .5rem; border-bottom:1px solid var(--line); }
+th { font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.large td { background:var(--hi); }
+tfoot td { font-weight:700; border-top:2px solid var(--fg); border-bottom:none; }
+.note { color:var(--muted); font-size:.85rem; margin-top:1rem; }</style></head><body><section class="invoice"><h1>Invoice #2026-014</h1><p class="meta">Alleato LLC · due in 30 days</p><table><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Amount</th></tr></thead><tbody><tr class="large"><td>Engine license</td><td class="num">1</td><td class="num">$1200.00</td><td class="num">$1200.00</td></tr><tr><td>Support hours</td><td class="num">8</td><td class="num">$95.00</td><td class="num">$760.00</td></tr><tr class="large"><td>On-site visit</td><td class="num">1</td><td class="num">$1500.00</td><td class="num">$1500.00</td></tr></tbody><tfoot><tr><td colspan="3">Total</td><td class="num">$3460.00</td></tr></tfoot></table><p class="note">Thank you for your business.</p></section></body></html>

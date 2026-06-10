@@ -10,5 +10,12 @@ let package = Package(
     targets: [
         .target(name: "Kumi"),
         .testTarget(name: "KumiTests", dependencies: ["Kumi"]),
+        // Showcase executables — each builds a styled page with Kumi and prints
+        // it (see Examples/render.sh → docs/). They are NOT library products, so
+        // packages depending on `Kumi` never build them.
+        .executableTarget(name: "report", dependencies: ["Kumi"], path: "Examples/report"),
+        .executableTarget(name: "invoice", dependencies: ["Kumi"], path: "Examples/invoice"),
+        .executableTarget(name: "article", dependencies: ["Kumi"], path: "Examples/article"),
+        .executableTarget(name: "gallery", dependencies: ["Kumi"], path: "Examples/gallery"),
     ]
 )

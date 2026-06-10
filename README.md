@@ -150,6 +150,25 @@ node.render { handle.write(Data($0.utf8)) }   // stream, no String materialized
 var page = ""; node.render(into: &page)        // append to an existing buffer
 ```
 
+## Examples
+
+Three runnable showcases live in `Examples/` (executable targets — they're not
+library products, so depending on `Kumi` never builds them):
+
+| Demo | Shows off |
+|---|---|
+| `report` | a test dashboard from a data model — the builder's `for`/`if`, `.flag("open", if:)`, conditional `.classes` |
+| `invoice` | a table built from line items — table helpers, conditional row classes, computed totals |
+| `article` | the `document` page API, prose + a code block, and a user comment whose `<script>` is escaped to inert text |
+
+```sh
+swift run report                 # prints a page to stdout
+Examples/render.sh               # renders all of them into docs/ (+ a gallery index.html)
+```
+
+The generated pages are committed under `docs/` (the gallery `index.html` is
+itself built with Kumi); open `docs/index.html` to browse them.
+
 ## Add it
 
 ```swift
